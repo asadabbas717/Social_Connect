@@ -1,96 +1,114 @@
-# 📱 Social Connect - Android App
-
-**Social Connect** is a Firebase-powered native Android social media app built in Java using Android Studio. It provides real-time user interaction through posts, likes, comments, profiles, and notifications, making it a feature-rich starter for social networking applications.
-
----
-
 ## 🚀 Features
 
-- **Authentication**
-  - User Signup/Login with Firebase Authentication
-  - Forgot Password & Launcher checks
+### 🔐 Authentication
+- User **Sign Up**, **Login**, and **Forgot Password**
+- Firebase Authentication with launcher-based login check
 
-- **User Profile**
-  - Edit profile via a Bottom Sheet
-  - Upload profile image from Camera or Gallery
-  - Display name, bio, email, and joined date
-  - View your own posts under your profile
+### 👤 User Profile
+- Bottom sheet **Edit Profile** system (Name, Bio, Image)
+- Upload profile picture from **Camera or Gallery**
+- Displays name, bio, email, and account joined date
+- Shows all your posts on profile screen
 
-- **Create Posts**
-  - Post text and upload images from gallery or camera
-  - Image uploads handled via Firebase Storage
-  - Posts shown on Home screen with username and profile image
+### 📝 Post System
+- Create posts with **text and optional image**
+- Upload images using Firebase Storage
+- Home feed shows:
+  - User info (name + profile picture)
+  - Post content
+  - Like button with real-time counter
+  - View and add Comments
 
-- **Post Feed**
-  - Real-time post feed on Home Fragment using Firestore
-  - Posts include:
-    - Username & profile image
-    - Post text & optional image
-    - Like button with live count
-    - View & Write Comment buttons
+### ❤️ Likes & 💬 Comments
+- Toggle-like system with live update
+- Comment screen shows:
+  - Commenter name and profile image
+  - Timestamp
+- Firestore subcollection-based comment storage
 
-- **Comment Section**
-  - Add and view comments on any post
-  - Comment UI includes username, comment time, and text
-  - Stored in Firestore as subcollection under each post
+### 🔍 Search
+- Search users or posts by text
+- **Smart switching** between user/post search (via long press)
+- Results show:
+  - Profile pictures and names
+  - Click to open Chat or Profile depending on context
+  - Message if "No results found"
 
-- **Likes**
-  - Realtime like/unlike toggle
-  - Likes are user-specific and stored in post document
-  - Like updates trigger Firestore UI refresh
+### 💬 Chat System
+- Start 1:1 **real-time chat** with any user
+- Conversations stored using Firestore collections
+- Chat UI with sent/received message bubbles
+- Automatic scroll and UI refresh
 
-- **Push Notifications (FCM)**
-  - Receive notifications when someone:
-    - Likes your post
-    - Comments on your post
-  - Device tokens stored and updated in Firestore
-
-- **Modern UI/UX**
-  - Bottom Navigation View
-  - Shimmer loading while fetching data
-  - Material design components used
-  - Circle profile images using Glide + CircularImageView
-
----
-
-## 🛠 Tech Stack
-
-| Layer            | Technology                          |
-|------------------|--------------------------------------|
-| Language         | Java                                 |
-| IDE              | Android Studio (Giraffe/Meerkat)     |
-| Backend Services | Firebase (Firestore, Auth, Storage)  |
-| Push Messages    | Firebase Cloud Messaging (FCM)       |
-| Image Handling   | Glide, Camera/Gallery Intents        |
-| Recyclerview     | Adapter-based post feed & comments   |
-| Notification API | OkHttp with JSON (FCM Manual Trigger)|
-| Build System     | Gradle + libs.versions.toml          |
+### 📋 UI & UX
+- Material design-based UI with modern touch
+- **Bottom navigation bar** with scrolling animation
+- Shimmer loading on post feed
+- Clean layouts using ConstraintLayout and LinearLayout
+- Reusable Adapters and Fragments for modularity
 
 ---
 
 ## 📂 Project Structure
 
+```plaintext
 com.example.socialconnect
 │
 ├── adapters/
-│ └── PostAdapter.java, CommentAdapter.java
+│   ├── PostAdapter.java
+│   ├── CommentAdapter.java
+│   ├── ChatAdapter.java
+│   └── UserListAdapter.java
 │
 ├── fragments/
-│ ├── HomeFragment.java
-│ ├── ProfileFragment.java
-│ └── SettingsFragment.java
+│   ├── HomeFragment.java
+│   ├── ProfileFragment.java
+│   └── SettingsFragment.java
 │
 ├── models/
-│ └── Post.java, Comment.java
-│
-├── utils/
-│ └── NotificationSender.java
+│   ├── Post.java
+│   ├── Comment.java
+│   └── Message.java
 │
 ├── activities/
-│ ├── LoginActivity.java
-│ ├── SignupActivity.java
-│ ├── MainActivity.java
-│ ├── ProfileActivity.java (replaced by BottomSheet)
-│ ├── CreatePostActivity.java
-│ ├── CommentActivity.java
-│ └── LauncherActivity.java
+│   ├── LoginActivity.java
+│   ├── SignupActivity.java
+│   ├── LauncherActivity.java
+│   ├── MainActivity.java
+│   ├── CreatePostActivity.java
+│   ├── CommentActivity.java
+│   ├── ConnectionsActivity.java
+│   ├── ChatActivity.java
+│   └── SearchActivity.java
+```
+
+---
+
+## 🧰 Tech Stack
+
+| Layer            | Technology                          |
+|------------------|--------------------------------------|
+| Language         | Java                                 |
+| IDE              | Android Studio (Meerkat)             |
+| Backend Services | Firebase Auth, Firestore, Storage    |
+| UI Components    | ConstraintLayout, Material, Glide    |
+| Image Handling   | Camera, Gallery, Glide               |
+| Navigation       | BottomNavigationView, Intents        |
+| Realtime DB Ops  | Firestore with snapshot listeners    |
+
+---
+
+## 🖼 Launcher Logo
+
+- Modern logo included (`ic_launcher.png`, `ic_launcher_round.png`)
+- Adaptive icon support
+- Launcher logo located in `res/mipmap-*` folders
+
+---
+
+## 📦 Final Notes
+
+- Fully **functional app with all core social features**
+- Clean, modular, and scalable architecture
+- Push notifications **not included** in the final build
+- Ready to deploy or extend with additional features
