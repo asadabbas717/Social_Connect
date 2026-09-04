@@ -1,114 +1,90 @@
-## 🚀 Features
+# Social Connect
 
-### 🔐 Authentication
-- User **Sign Up**, **Login**, and **Forgot Password**
-- Firebase Authentication with launcher-based login check
+A full-featured Android social application built with Java, XML, and Firebase. The project demonstrates authentication, user-generated content, media upload, search, comments, likes, and real-time one-to-one messaging in a native Android application.
 
-### 👤 User Profile
-- Bottom sheet **Edit Profile** system (Name, Bio, Image)
-- Upload profile picture from **Camera or Gallery**
-- Displays name, bio, email, and account joined date
-- Shows all your posts on profile screen
+## Engineering Highlights
 
-### 📝 Post System
-- Create posts with **text and optional image**
-- Upload images using Firebase Storage
-- Home feed shows:
-  - User info (name + profile picture)
-  - Post content
-  - Like button with real-time counter
-  - View and add Comments
+- Firebase Authentication for sign-up, login, password recovery, and session-aware launch flow
+- Firestore-backed social feed with real-time updates
+- Firebase Storage integration for profile and post images
+- Real-time one-to-one chat with conversation persistence
+- Modular Android structure using activities, fragments, adapters, and model classes
+- Search across users and posts
+- Profile editing with camera/gallery image selection
+- Reusable UI patterns for feed, comments, chat, and profile screens
 
-### ❤️ Likes & 💬 Comments
-- Toggle-like system with live update
-- Comment screen shows:
-  - Commenter name and profile image
-  - Timestamp
-- Firestore subcollection-based comment storage
+## Features
 
-### 🔍 Search
-- Search users or posts by text
-- **Smart switching** between user/post search (via long press)
-- Results show:
-  - Profile pictures and names
-  - Click to open Chat or Profile depending on context
-  - Message if "No results found"
+### Authentication
 
-### 💬 Chat System
-- Start 1:1 **real-time chat** with any user
-- Conversations stored using Firestore collections
-- Chat UI with sent/received message bubbles
-- Automatic scroll and UI refresh
+- User sign-up and login
+- Forgot-password flow
+- Launcher-based authentication check
 
-### 📋 UI & UX
-- Material design-based UI with modern touch
-- **Bottom navigation bar** with scrolling animation
-- Shimmer loading on post feed
-- Clean layouts using ConstraintLayout and LinearLayout
-- Reusable Adapters and Fragments for modularity
+### User Profiles
 
----
+- Edit name, bio, and profile image
+- Upload profile picture from camera or gallery
+- Display user details and joined date
+- Show a user's posts on their profile
 
-## 📂 Project Structure
+### Posts
 
-```plaintext
+- Create text posts with optional images
+- Upload images through Firebase Storage
+- Display author information and post content
+- Like posts with live counters
+- View and add comments
+
+### Likes and Comments
+
+- Toggle-like behavior
+- Live like-count updates
+- Commenter information and timestamps
+- Firestore subcollection-based comments
+
+### Search
+
+- Search users or posts
+- Switch search context between people and content
+- Open matching profiles, conversations, or posts from results
+
+### Real-Time Chat
+
+- Start one-to-one conversations with users
+- Firestore-backed conversation storage
+- Sent and received message bubbles
+- Live conversation updates
+
+## Project Structure
+
+```text
 com.example.socialconnect
-│
-├── adapters/
-│   ├── PostAdapter.java
-│   ├── CommentAdapter.java
-│   ├── ChatAdapter.java
-│   └── UserListAdapter.java
-│
-├── fragments/
-│   ├── HomeFragment.java
-│   ├── ProfileFragment.java
-│   └── SettingsFragment.java
-│
-├── models/
-│   ├── Post.java
-│   ├── Comment.java
-│   └── Message.java
-│
 ├── activities/
-│   ├── LoginActivity.java
-│   ├── SignupActivity.java
-│   ├── LauncherActivity.java
-│   ├── MainActivity.java
-│   ├── CreatePostActivity.java
-│   ├── CommentActivity.java
-│   ├── ConnectionsActivity.java
-│   ├── ChatActivity.java
-│   └── SearchActivity.java
+├── adapters/
+├── fragments/
+└── models/
 ```
 
----
+The application separates screen behavior, reusable list adapters, fragments, and data models rather than placing all functionality in a single activity.
 
-## 🧰 Tech Stack
+## Tech Stack
 
-| Layer            | Technology                          |
-|------------------|--------------------------------------|
-| Language         | Java                                 |
-| IDE              | Android Studio (Meerkat)             |
-| Backend Services | Firebase Auth, Firestore, Storage    |
-| UI Components    | ConstraintLayout, Material, Glide    |
-| Image Handling   | Camera, Gallery, Glide               |
-| Navigation       | BottomNavigationView, Intents        |
-| Realtime DB Ops  | Firestore with snapshot listeners    |
+| Area | Technology |
+| --- | --- |
+| Language | Java |
+| UI | Android XML, Material components |
+| IDE | Android Studio |
+| Authentication | Firebase Authentication |
+| Database | Cloud Firestore |
+| Media | Firebase Storage, Glide |
+| Architecture | Activities, Fragments, Adapters, Models |
+| Real-time updates | Firestore snapshot listeners |
 
----
+## Scope
 
-## 🖼 Launcher Logo
+The application implements the core social-network workflows listed above. Push notifications are not included in the current version.
 
-- Modern logo included (`ic_launcher.png`, `ic_launcher_round.png`)
-- Adaptive icon support
-- Launcher logo located in `res/mipmap-*` folders
+## Author
 
----
-
-## 📦 Final Notes
-
-- Fully **functional app with all core social features**
-- Clean, modular, and scalable architecture
-- Push notifications **not included** in the final build
-- Ready to deploy or extend with additional features
+Developed by **Asad Abbas** during an Android development internship project.
