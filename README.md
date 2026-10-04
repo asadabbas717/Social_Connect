@@ -1,90 +1,50 @@
 # Social Connect
 
-A full-featured Android social application built with Java, XML, and Firebase. The project demonstrates authentication, user-generated content, media upload, search, comments, likes, and real-time one-to-one messaging in a native Android application.
+Social app being migrated to React Native for Android and iOS, using the existing Firebase backend. The active application is in [`mobile/`](mobile/README.md), and ongoing development uses the `main` branch.
 
-## Engineering Highlights
+Implemented workflows: email registration/login/password reset, feed, text/image posts, likes, comments, profile editing, and logout. Search, direct messaging, and a profile post list are not implemented. Client-side notification sending was removed during review because privileged sending belongs on a trusted backend.
 
-- Firebase Authentication for sign-up, login, password recovery, and session-aware launch flow
-- Firestore-backed social feed with real-time updates
-- Firebase Storage integration for profile and post images
-- Real-time one-to-one chat with conversation persistence
-- Modular Android structure using activities, fragments, adapters, and model classes
-- Search across users and posts
-- Profile editing with camera/gallery image selection
-- Reusable UI patterns for feed, comments, chat, and profile screens
+## React Native setup and run
 
-## Features
-
-### Authentication
-
-- User sign-up and login
-- Forgot-password flow
-- Launcher-based authentication check
-
-### User Profiles
-
-- Edit name, bio, and profile image
-- Upload profile picture from camera or gallery
-- Display user details and joined date
-- Show a user's posts on their profile
-
-### Posts
-
-- Create text posts with optional images
-- Upload images through Firebase Storage
-- Display author information and post content
-- Like posts with live counters
-- View and add comments
-
-### Likes and Comments
-
-- Toggle-like behavior
-- Live like-count updates
-- Commenter information and timestamps
-- Firestore subcollection-based comments
-
-### Search
-
-- Search users or posts
-- Switch search context between people and content
-- Open matching profiles, conversations, or posts from results
-
-### Real-Time Chat
-
-- Start one-to-one conversations with users
-- Firestore-backed conversation storage
-- Sent and received message bubbles
-- Live conversation updates
-
-## Project Structure
-
-```text
-com.example.socialconnect
-├── activities/
-├── adapters/
-├── fragments/
-└── models/
+```powershell
+cd mobile
+npm ci
+npm run check
+npm run android
 ```
 
-The application separates screen behavior, reusable list adapters, fragments, and data models rather than placing all functionality in a single activity.
+Use a native development build, not Expo Go. See the [mobile setup guide](mobile/README.md) for Android requirements, Firebase client files, and iOS configuration. See [migration status](mobile/MIGRATION_STATUS.md) for verified checks and pending device/backend validation. The quality-check workflow is in `.github/workflows/mobile.yml`.
 
-## Tech Stack
+## Original Android project (migration reference)
 
-| Area | Technology |
-| --- | --- |
-| Language | Java |
-| UI | Android XML, Material components |
-| IDE | Android Studio |
-| Authentication | Firebase Authentication |
-| Database | Cloud Firestore |
-| Media | Firebase Storage, Glide |
-| Architecture | Activities, Fragments, Adapters, Models |
-| Real-time updates | Firestore snapshot listeners |
+The `app/` sources and root Gradle files remain as a behavioral reference until the migrated app has passed device testing. They are separate from `mobile/android/`, which Expo generates for the React Native application. Do not edit generated Expo native files by hand.
 
-## Scope
+Use Android Studio, JDK 17, Android SDK 36, and network access to Google Maven, Maven Central, JitPack, and Gradle distributions. The wrapper specifies Gradle 8.13 and the build uses Android Gradle Plugin 8.11.0. Minimum device API is 23.
 
-The application implements the core social-network workflows listed above. Push notifications are not included in the current version.
+Configure a dedicated development Firebase project with email/password Authentication, Firestore, and Storage. Register `com.example.socialconnect` and place its downloaded client configuration in `app/google-services.json`. Never put service-account keys or privileged notification credentials in the app. Review backend access rules before using real accounts or data. There are no environment variables required by application code; local SDK/JDK configuration is machine-specific.
 
-## Author
+Open in Android Studio and run the `app` configuration on an emulator/device. From PowerShell:
 
-Developed by **Asad Abbas** during an Android development internship project.
+```powershell
+.\gradlew.bat testDebugUnitTest lintDebug assembleDebug
+```
+
+Debug APK output: `app/build/outputs/apk/debug/app-debug.apk`. Release packaging uses `assembleRelease`, but release signing and distribution are not configured. The debug build is not a release artifact.
+
+## Original Android structure
+
+- Activities/fragments: screens and navigation.
+- Adapters: recycled feed/comment rows.
+- `models`: Firestore data mapping.
+- `data`: profile update fields and atomic persistence.
+- `res`: Android layouts and visual resources.
+
+Most Firebase access remains in UI code. This is an incremental improvement of a student project, not a completed production architecture.
+
+## Original Android limits and verification
+
+Feed shows the newest 50 posts with a lifecycle-scoped live listener. Comments show the latest 100 comments, ordered oldest to newest within that window. Older-history pagination is pending. Transactions for profiles and likes require network connectivity; other Firebase operations may remain pending offline. Upload/database partial failures still need recovery design.
+
+Android profile field regression tests have been added. Original Android build, lint, and tests have not run successfully in the current review environment because Java is unavailable. Device, backend authorization, notification, and accessibility verification remain pending. Backend security-rule files are not provided yet.
+
+See [the engineering audit](ENGINEERING_AUDIT.md) for findings and deferred work. [The migration assessment](REACT_NATIVE_ASSESSMENT.md) describes the original inspected source; some issues there have since been addressed. React Native core workflows are now implemented and statically checked; native device/backend validation is pending. Firebase remains the backend; no Supabase migration has been performed.
