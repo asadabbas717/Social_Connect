@@ -27,7 +27,7 @@ function Navigation() {
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Protected guard={!user}>
-        <Stack.Screen name="sign-in" options={{ title: 'Social Connect' }} />
+        <Stack.Screen name="sign-in" options={{ title: 'Loopnest' }} />
       </Stack.Protected>
       <Stack.Protected guard={!!user}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

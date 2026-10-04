@@ -1,6 +1,10 @@
-# Social Connect — React Native migration
+# Loopnest — React Native migration
 
 Expo SDK 57, React Native 0.86, TypeScript, Expo Router, and React Native Firebase. Android source in the parent project's `app/` directory remains separate. Firebase users and existing document fields are reused; no database migration or live backend changes have been performed.
+
+The product is now named **Loopnest**, with Expo slug/deep-link scheme `loopnest` and package name `loopnest-mobile`. The native identifier `com.example.socialconnect` is retained to preserve the existing Firebase registration. Branding changes require rebuilding installed native clients.
+
+The renamed icon is `assets/loopnest-icon.png`, edited with the built-in image-generation tool. Edit prompt: replace only the white word “SocialConnect” beneath the symbol with exactly “Loopnest”, centered in the same position with the same white sans-serif type; preserve the dark blue background, blue rounded square, white chat bubble, red heart, lighting, texture, and composition; output a square image with no additional text or elements. The original artwork remains in the Android reference project and Git history.
 
 ## Implemented
 

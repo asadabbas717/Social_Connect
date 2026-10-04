@@ -17,7 +17,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Social Connect',
+          title: 'Loopnest',
           tabBarLabel: 'Feed',
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 22 }}>⌂</Text>,
         }}

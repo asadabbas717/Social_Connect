@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SocialConnect"
+rootProject.name = "Loopnest"
 include(":app")

@@ -1,4 +1,6 @@
-# Social Connect
+# Loopnest
+
+Repository: [asadabbas717/loopnest](https://github.com/asadabbas717/loopnest).
 
 Social app being migrated to React Native for Android and iOS, using the existing Firebase backend. The active application is in [`mobile/`](mobile/README.md), and ongoing development uses the `main` branch.
 
