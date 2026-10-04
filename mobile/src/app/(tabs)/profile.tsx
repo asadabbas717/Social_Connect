@@ -32,11 +32,11 @@ export default function ProfileScreen() {
       ) : (
         <>
           <View style={{ alignItems: 'center', marginVertical: 24 }}>
-            <Avatar name={profile?.name || 'You'} url={profile?.imageUrl} size={96} />
+            <Avatar name={profile?.name || 'You'} size={96} />
           </View>
           <Heading
             title={profile?.name || 'Make yourself at home.'}
-            subtitle={profile?.bio || 'Add your name, a photo and a little about yourself.'}
+            subtitle={profile?.bio || 'Add your name and a little about yourself.'}
           />
           {profile?.createdAt && (
             <Text style={[styles.small, { marginBottom: 24 }]}>

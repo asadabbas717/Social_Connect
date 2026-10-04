@@ -1,4 +1,4 @@
-import { Image, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import type { Post } from '../domain/social';
 import { useSession } from '../providers/Session';
@@ -26,13 +26,7 @@ export function PostCard({
           {post.text}
         </Text>
       )}
-      {!!post.imageUrl && (
-        <Image
-          source={{ uri: post.imageUrl }}
-          style={styles.image}
-          accessibilityLabel="Image attached to this post"
-        />
-      )}
+      {!!post.imageUrl && <Text style={styles.small}>Photo unavailable</Text>}
       <View
         style={[
           styles.row,

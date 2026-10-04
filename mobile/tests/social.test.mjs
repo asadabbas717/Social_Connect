@@ -5,7 +5,6 @@ import {
   profileFields,
   postText,
   commentText,
-  validateImage,
   decodePost,
   decodeComment,
   decodeProfile,
@@ -39,10 +38,10 @@ test('profile rejects empty names and oversized bios', () => {
   assert.throws(() => profileFields('  ', ''));
   assert.throws(() => profileFields('Ada', 'a'.repeat(limits.bio + 1)));
 });
-test('image-only post is allowed but empty and oversized posts are rejected', () => {
-  assert.equal(postText(' ', true), '');
-  assert.throws(() => postText(' ', false));
-  assert.throws(() => postText('x'.repeat(limits.post + 1), false));
+test('posts require text and reject oversized content', () => {
+  assert.equal(postText(' Hello '), 'Hello');
+  assert.throws(() => postText(' '));
+  assert.throws(() => postText('x'.repeat(limits.post + 1)));
 });
 test('comments validate trim, empty and length boundaries', () => {
   assert.equal(commentText(' Hi '), 'Hi');
@@ -57,18 +56,7 @@ test('password characters are preserved and email normalized', () => {
   assert.throws(() => authInput('not-email', 'password'));
   assert.throws(() => authInput('a@example.test', 'short', true));
 });
-test('image validation rejects oversized, unknown-size, and non-image uploads', () => {
-  assert.doesNotThrow(() =>
-    validateImage({ uri: 'file://test', mimeType: 'image/png', size: 100 }),
-  );
-  for (const [mimeType, size] of [
-    ['image/png', limits.imageBytes + 1],
-    ['image/png', 0],
-    ['text/html', 100],
-  ]) {
-    assert.throws(() => validateImage({ uri: 'file://test', mimeType, size }));
-  }
-});
+
 test('legacy posts lacking likes and images remain readable', () => {
   assert.deepEqual(decodePost('id', { uid: 'user', text: 'Legacy' }), {
     id: 'id',

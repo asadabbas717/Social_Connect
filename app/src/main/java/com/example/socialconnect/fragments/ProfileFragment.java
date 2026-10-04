@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.socialconnect.EditProfileBottomSheet;
 import com.example.socialconnect.R;
 import com.example.socialconnect.adapters.PostAdapter;
@@ -67,16 +66,10 @@ public class ProfileFragment extends Fragment {
                     if (snapshot.exists()) {
                         String name = snapshot.getString("name");
                         String bio = snapshot.getString("bio");
-                        String imageUrl = snapshot.getString("imageUrl");
 
                         nameText.setText(name != null ? name : "No Name");
                         bioText.setText(bio != null ? bio : "No Bio");
 
-                        if (imageUrl != null && !imageUrl.isEmpty()) {
-                            Glide.with(this)
-                                    .load(imageUrl)
-                                    .into(profileImage);
-                        }
                     }
                 })
                 .addOnFailureListener(e -> {

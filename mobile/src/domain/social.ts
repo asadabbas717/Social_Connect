@@ -8,14 +8,12 @@ export type Post = {
   likes: Record<string, boolean>;
 };
 export type Comment = { id: string; uid: string; text: string; timestamp: number | null };
-export type PickedImage = { uri: string; mimeType: string; size: number };
 
 export const limits = {
   post: 5000,
   comment: 2000,
   name: 80,
   bio: 500,
-  imageBytes: 5 * 1024 * 1024,
 };
 const string = (value: unknown) => (typeof value === 'string' ? value : '');
 const date = (value: unknown): number | null => {
@@ -65,9 +63,9 @@ export function profileFields(name: string, bio: string, imageUrl?: string) {
   if (bio.length > limits.bio) throw new Error(`Bio must be at most ${limits.bio} characters.`);
   return { name, bio, ...(imageUrl === undefined ? {} : { imageUrl }) };
 }
-export function postText(text: string, hasImage: boolean) {
+export function postText(text: string) {
   const result = text.trim();
-  if (!result && !hasImage) throw new Error('Write something or choose an image.');
+  if (!result) throw new Error('Write something to share.');
   if (result.length > limits.post)
     throw new Error(`Posts can contain up to ${limits.post} characters.`);
   return result;
@@ -77,12 +75,6 @@ export function commentText(text: string) {
   if (!result || result.length > limits.comment)
     throw new Error(`Comments must contain 1–${limits.comment} characters.`);
   return result;
-}
-export function validateImage(image: PickedImage) {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.mimeType))
-    throw new Error('Choose a JPEG, PNG or WebP image.');
-  if (image.size <= 0 || image.size > limits.imageBytes)
-    throw new Error('Images must be smaller than 5 MB.');
 }
 export function authInput(email: string, password: string, register = false) {
   const trimmed = email.trim();

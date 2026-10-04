@@ -23,7 +23,7 @@ export function Author({ uid, timestamp }: { uid: string; timestamp?: number | n
   const name = profile?.name || 'Community member';
   return (
     <View style={styles.row}>
-      <Avatar name={name} url={profile?.imageUrl} />
+      <Avatar name={name} />
       <View>
         <Text style={styles.name}>{name}</Text>
         {timestamp !== undefined && (

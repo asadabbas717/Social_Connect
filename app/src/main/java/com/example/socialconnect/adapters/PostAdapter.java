@@ -80,15 +80,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         String name = userSnap.getString("name");
                         holder.postUsername.setText( name);
 
-                        String imageUrl = userSnap.getString("imageUrl");
-                        if (imageUrl != null && !imageUrl.isEmpty()) {
-                            Glide.with(holder.itemView.getContext())
-                                    .load(imageUrl)
-                                    .placeholder(R.drawable.ic_profile_placeholder)
-                                    .into(holder.postUserImage);
-                        } else {
-                            holder.postUserImage.setImageResource(R.drawable.ic_profile_placeholder);
-                        }
+                        holder.postUserImage.setImageResource(R.drawable.ic_profile_placeholder);
                     } else {
                         holder.postUsername.setText("Unknown User");
                         holder.postUserImage.setImageResource(R.drawable.ic_profile_placeholder);
@@ -98,13 +90,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
 
 
-        if (post.imageUrl != null && !post.imageUrl.isEmpty()) {
-            holder.postImage.setVisibility(View.VISIBLE);
-            Glide.with(holder.itemView.getContext()).load(post.imageUrl).into(holder.postImage);
-
-        } else {
-            holder.postImage.setVisibility(View.GONE);
-        }
+        holder.postImage.setVisibility(View.GONE);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

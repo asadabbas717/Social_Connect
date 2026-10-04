@@ -14,8 +14,7 @@ import {
   deleteField,
   FieldPath,
 } from '@react-native-firebase/firestore';
-import { ref, putFile, getDownloadURL, deleteObject } from '@react-native-firebase/storage';
-import { auth, db, storage } from './firebase';
+import { auth, db } from './firebase';
 import {
   decodeProfile,
   decodePost,
@@ -23,8 +22,6 @@ import {
   profileFields,
   postText,
   commentText,
-  validateImage,
-  type PickedImage,
   type Post,
   type Comment,
 } from '../domain/social';
@@ -49,46 +46,23 @@ export function watchProfile(
     error,
   );
 }
-async function upload(image: PickedImage, path: string) {
-  validateImage(image);
-  const target = ref(storage, path);
-  await putFile(target, image.uri, { contentType: image.mimeType });
-  try {
-    return { url: await getDownloadURL(target), target };
-  } catch (e) {
-    await deleteObject(target).catch(() => undefined);
-    throw e;
-  }
-}
-const extension = (image: PickedImage) =>
-  image.mimeType === 'image/png' ? 'png' : image.mimeType === 'image/webp' ? 'webp' : 'jpg';
-export async function saveProfile(name: string, bio: string, image?: PickedImage) {
+export async function saveProfile(name: string, bio: string) {
   const uid = requireUser();
-  profileFields(name, bio);
-  // New objects prevent a failed metadata write from replacing the existing avatar.
-  const id = doc(collection(db, 'posts')).id;
-  const uploaded = image
-    ? await upload(image, `profiles/${uid}/${id}.${extension(image)}`)
-    : undefined;
-  try {
-    await runTransaction(db, async (transaction) => {
-      const target = profileRef(uid);
-      const existing = await transaction.get(target);
-      transaction.set(
-        target,
-        {
-          ...profileFields(name, bio, uploaded?.url),
-          ...(!existing.exists() || !existing.get('createdAt')
-            ? { createdAt: serverTimestamp() }
-            : {}),
-        },
-        { merge: true },
-      );
-    });
-  } catch (e) {
-    if (uploaded) await deleteObject(uploaded.target).catch(() => undefined);
-    throw e;
-  }
+  const fields = profileFields(name, bio);
+  await runTransaction(db, async (transaction) => {
+    const target = profileRef(uid);
+    const existing = await transaction.get(target);
+    transaction.set(
+      target,
+      {
+        ...fields,
+        ...(!existing.exists() || !existing.get('createdAt')
+          ? { createdAt: serverTimestamp() }
+          : {}),
+      },
+      { merge: true },
+    );
+  });
 }
 export function watchFeed(next: (posts: Post[]) => void, error: (e: unknown) => void) {
   return onSnapshot(
@@ -113,25 +87,16 @@ export async function olderPosts(lastId: string) {
     .map((item) => decodePost(item.id, item.data()))
     .filter((item): item is Post => item !== null);
 }
-export async function createPost(text: string, image?: PickedImage) {
+export async function createPost(text: string) {
   const uid = requireUser();
-  const content = postText(text, !!image);
-  const target = doc(collection(db, 'posts'));
-  const uploaded = image
-    ? await upload(image, `posts/${uid}_${target.id}.${extension(image)}`)
-    : undefined;
-  try {
-    await setDoc(target, {
-      uid,
-      text: content,
-      imageUrl: uploaded?.url ?? '',
-      timestamp: serverTimestamp(),
-      likes: {},
-    });
-  } catch (e) {
-    if (uploaded) await deleteObject(uploaded.target).catch(() => undefined);
-    throw e;
-  }
+  const content = postText(text);
+  await setDoc(doc(collection(db, 'posts')), {
+    uid,
+    text: content,
+    imageUrl: '',
+    timestamp: serverTimestamp(),
+    likes: {},
+  });
 }
 export async function toggleLike(id: string) {
   const uid = requireUser();

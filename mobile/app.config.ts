@@ -25,14 +25,6 @@ const config: ExpoConfig = {
     '@react-native-firebase/app',
     '@react-native-firebase/auth',
     ['expo-build-properties', { ios: { useFrameworks: 'dynamic' } }],
-    [
-      'expo-image-picker',
-      {
-        photosPermission: 'Choose a photo to share or use on your profile.',
-        cameraPermission: 'Take a photo to share with your community.',
-        microphonePermission: false,
-      },
-    ],
   ],
 };
 export default config;

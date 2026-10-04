@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -114,17 +113,11 @@ export function Loading() {
     </View>
   );
 }
-export function Avatar({ url, name, size = 44 }: { url?: string; name: string; size?: number }) {
-  return url ? (
-    <Image
-      source={{ uri: url }}
-      accessibilityLabel={`${name}'s profile image`}
-      style={{ width: size, height: size, borderRadius: size / 2 }}
-    />
-  ) : (
+export function Avatar({ name, size = 44 }: { name: string; size?: number }) {
+  return (
     <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]}>
       <Text style={{ color: colors.accent, fontWeight: '700', fontSize: size / 3 }}>
-        {name.slice(0, 1).toUpperCase() || 'S'}
+        {name.slice(0, 1).toUpperCase() || 'L'}
       </Text>
     </View>
   );
@@ -172,7 +165,6 @@ export const styles = StyleSheet.create({
   name: { color: colors.ink, fontSize: 16, fontWeight: '600' },
   small: { color: colors.muted, fontSize: 13 },
   copy: { color: colors.ink, fontSize: 16, lineHeight: 24 },
-  image: { width: '100%', height: 240, borderRadius: 12, backgroundColor: colors.light },
   link: { color: colors.accent, fontWeight: '600', paddingVertical: 14 },
   divider: { height: 1, backgroundColor: colors.line, marginVertical: 16 },
 });
