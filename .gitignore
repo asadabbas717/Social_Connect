@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+.idea/
+app/google-services.json
+.env
+.env.*
+!.env.example

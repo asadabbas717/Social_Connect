@@ -59,6 +59,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
         postBtn.setOnClickListener(v -> {
             String content = postContent.getText().toString().trim();
+            if (mAuth.getCurrentUser() == null) { finish(); return; }
             String uid = mAuth.getCurrentUser().getUid();
 
             if (content.isEmpty() && imageUri == null) {
@@ -66,15 +67,15 @@ public class CreatePostActivity extends AppCompatActivity {
                 return;
             }
 
+            postBtn.setEnabled(false);
             if (imageUri != null) {
                 String fileName = "posts/" + uid + "_" + System.currentTimeMillis() + ".jpg";
                 storage.getReference().child(fileName).putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot ->
                                 taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                                     savePost(content, uri.toString());
-                                }))
-                        .addOnFailureListener(e ->
-                                Toast.makeText(this, "Image upload failed", Toast.LENGTH_SHORT).show());
+                                }).addOnFailureListener(e -> showPostError()))
+                        .addOnFailureListener(e -> showPostError());
             } else {
                 savePost(content, null);
             }
@@ -82,12 +83,14 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void savePost(String text, String imageUrl) {
+        if (mAuth.getCurrentUser() == null) { finish(); return; }
         String uid = mAuth.getCurrentUser().getUid();
         HashMap<String, Object> post = new HashMap<>();
         post.put("uid", uid);
         post.put("text", text);
         post.put("imageUrl", imageUrl != null ? imageUrl : "");
         post.put("timestamp", FieldValue.serverTimestamp());
+        post.put("likes", new HashMap<String, Boolean>());
 
 
         db.collection("posts").add(post)
@@ -95,7 +98,10 @@ public class CreatePostActivity extends AppCompatActivity {
                     Toast.makeText(this, "Post created", Toast.LENGTH_SHORT).show();
                     finish(); // go back to Home
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Post failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnFailureListener(e -> showPostError());
+    }
+    private void showPostError() {
+        postBtn.setEnabled(true);
+        Toast.makeText(this, "Could not publish post. Check your connection and try again.", Toast.LENGTH_LONG).show();
     }
 }

@@ -43,9 +43,6 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.messaging)
-    implementation(libs.navigation.fragment)
-    implementation(libs.navigation.ui)
-    implementation(libs.play.services.cast.framework)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -53,8 +50,6 @@ dependencies {
     annotationProcessor(libs.compiler)
     implementation(libs.imagepicker)
     implementation(libs.circleimageview)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.v493)
 
 
 }

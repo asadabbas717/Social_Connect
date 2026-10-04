@@ -6,6 +6,8 @@
 
     <ImageView
         android:id="@+id/profileImage"
+        android:contentDescription="Change profile image"
+        android:focusable="true"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"

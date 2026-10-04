@@ -31,21 +31,23 @@ public class SignupActivity extends AppCompatActivity {
 
         registerBtn.setOnClickListener(v -> {
             String email = signupEmail.getText().toString().trim();
-            String password = signupPassword.getText().toString().trim();
+            String password = signupPassword.getText().toString();
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "All fields required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            registerBtn.setEnabled(false);
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
+                        registerBtn.setEnabled(true);
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(this, LoginActivity.class));
                             finish();
                         } else {
-                            Toast.makeText(this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Account could not be created. Check your email, password and connection.", Toast.LENGTH_LONG).show();
                         }
                     });
         });

@@ -26,6 +26,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     }
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
+        String boundCommentId;
         TextView commentUsername, commentText, commentTime;
 
         public CommentViewHolder(@NonNull View itemView) {
@@ -48,6 +49,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentList.get(position);
 
+        holder.boundCommentId = comment.getId();
+        holder.commentUsername.setText("User");
         // Load comment text
         holder.commentText.setText(comment.getText());
 
@@ -59,14 +62,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         }
 
         // Fetch username from Firestore
+        if (comment.getUid() == null || comment.getUid().isEmpty()) return;
         FirebaseFirestore.getInstance().collection("users")
                 .document(comment.getUid())
                 .get()
                 .addOnSuccessListener(snapshot -> {
+                    if (!Objects.equals(holder.boundCommentId, comment.getId())) return;
                     String name = snapshot.getString("name");
                     holder.commentUsername.setText(name != null ? name : "User");
                 })
-                .addOnFailureListener(e -> holder.commentUsername.setText("User"));
+                .addOnFailureListener(e -> {
+                    if (Objects.equals(holder.boundCommentId, comment.getId())) holder.commentUsername.setText("User");
+                });
     }
 
     @Override

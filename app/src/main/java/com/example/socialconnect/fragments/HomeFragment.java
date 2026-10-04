@@ -3,7 +3,6 @@ package com.example.socialconnect.fragments;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,6 +20,7 @@ import com.example.socialconnect.models.Post;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,8 @@ public class HomeFragment extends Fragment {
     Button createPostBtn;
     List<Post> postList = new ArrayList<>();
     PostAdapter adapter;
+
+    private ListenerRegistration feedListener;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -51,35 +53,49 @@ public class HomeFragment extends Fragment {
 
         createPostBtn.setOnClickListener(v -> startActivity(new Intent(getActivity(), CreatePostActivity.class)));
 
+
+
+
+    }
+
+    @Override public void onStart() {
+        super.onStart();
         loadPosts();
+    }
 
+    @Override public void onStop() {
+        if (feedListener != null) { feedListener.remove(); feedListener = null; }
+        super.onStop();
+    }
 
+    @Override public void onDestroyView() {
+        recyclerView.setAdapter(null);
+        recyclerView = null;
+        adapter = null;
+        super.onDestroyView();
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void loadPosts() {
-        FirebaseFirestore.getInstance()
-                .collection("posts")
+        if (feedListener != null) feedListener.remove();
+        feedListener = db.collection("posts")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
+                .limit(50)
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (getView() == null || adapter == null) return;
+                    if (error != null || querySnapshot == null) {
+                        Toast.makeText(getContext(), "Could not load feed. Check your connection.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     postList.clear();
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         Post post = doc.toObject(Post.class);
-                        if (post != null) {
-                            post.id = doc.getId(); // 🔥 required for likes/comments
-                            Log.d("POST_LOAD", "Post loaded: " + post.text);
+                        if (post != null && post.uid != null && !post.uid.isEmpty()) {
+                            post.id = doc.getId();
                             postList.add(post);
                         }
                     }
                     adapter.notifyDataSetChanged();
-                    Log.d("POST_ADAPTER", "Adapter notified with " + postList.size() + " posts");
-
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error loading posts", e);
-                    Toast.makeText(getContext(), "Error loading posts", Toast.LENGTH_SHORT).show();
                 });
     }
-
 }

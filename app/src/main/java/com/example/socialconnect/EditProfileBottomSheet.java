@@ -12,10 +12,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import java.util.HashMap;
+import com.example.socialconnect.data.ProfileStore;
 
 public class EditProfileBottomSheet extends BottomSheetDialogFragment {
 
@@ -58,6 +57,7 @@ public class EditProfileBottomSheet extends BottomSheetDialogFragment {
         db.collection("users").document(user.getUid())
                 .get()
                 .addOnSuccessListener(snapshot -> {
+                    if (!isAdded() || getView() == null) return;
                     if (snapshot.exists()) {
                         String name = snapshot.getString("name");
                         String bio = snapshot.getString("bio");
@@ -69,7 +69,7 @@ public class EditProfileBottomSheet extends BottomSheetDialogFragment {
                             Glide.with(requireContext()).load(imageUrl).into(profileImage);
                         }
                     }
-                });
+                }).addOnFailureListener(e -> showSaveError());
 
         profileImage.setOnClickListener(v -> ImagePicker.with(this)
                 .crop()
@@ -91,53 +91,44 @@ public class EditProfileBottomSheet extends BottomSheetDialogFragment {
 
         String uid = user.getUid();
 
+        saveBtn.setEnabled(false);
         if (imageUri != null) {
             String filePath = "profiles/" + uid + ".jpg";
             storage.getReference().child(filePath).putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot ->
                             taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                                 saveToFirestore(uid, nameTxt, bioTxt, uri.toString());
-                            }))
-                    .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show());
+                            }).addOnFailureListener(e -> showSaveError()))
+                    .addOnFailureListener(e -> showSaveError());
         } else {
-            saveToFirestore(uid, nameTxt, bioTxt, "");
+            saveToFirestore(uid, nameTxt, bioTxt, null);
         }
 
     }
 
     private void saveToFirestore(String uid, String name, String bio, String imageUrl) {
-        HashMap<String, Object> profile = new HashMap<>();
-        profile.put("name", name);
-        profile.put("bio", bio);
-        profile.put("imageUrl", imageUrl);
-        profile.put("createdAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
-
-        db.collection("users").document(uid).set(profile)
+        ProfileStore.save(uid, name, bio, imageUrl)
                 .addOnSuccessListener(unused -> {
+                    if (!isAdded()) return;
                     Toast.makeText(getContext(), "Profile updated", Toast.LENGTH_SHORT).show();
                     dismiss();
-                    FirebaseMessaging.getInstance().getToken()
-                            .addOnSuccessListener(token -> {
-                                FirebaseFirestore.getInstance()
-                                        .collection("users")
-                                        .document(uid)
-                                        .update("fcmToken", token);
-                            });
-
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to update", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> showSaveError());
 
+    }
 
+    private void showSaveError() {
+        if (!isAdded() || getView() == null) return;
+        saveBtn.setEnabled(true);
+        Toast.makeText(getContext(), "Could not save profile. Check your connection and try again.", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null) {
+        if (resultCode == android.app.Activity.RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            profileImage.setImageURI(imageUri);
+            if (getView() != null) profileImage.setImageURI(imageUri);
         }
     }
 }

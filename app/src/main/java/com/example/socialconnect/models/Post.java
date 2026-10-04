@@ -2,6 +2,7 @@ package com.example.socialconnect.models;
 
 import com.google.firebase.Timestamp;
 public class Post {
+    public java.util.Map<String, Boolean> likes;
     public String id;
     public String text;
     public String imageUrl;

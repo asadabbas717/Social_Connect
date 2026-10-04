@@ -31,13 +31,15 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 return;
             }
 
+            resetBtn.setEnabled(false);
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(task -> {
+                        resetBtn.setEnabled(true);
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "Reset email sent", Toast.LENGTH_SHORT).show();
                             finish(); // go back to login
                         } else {
-                            Toast.makeText(this, "Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Could not request a reset. Check your email and connection.", Toast.LENGTH_LONG).show();
                         }
                     });
         });

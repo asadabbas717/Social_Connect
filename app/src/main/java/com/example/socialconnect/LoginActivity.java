@@ -35,21 +35,23 @@ public class LoginActivity extends AppCompatActivity {
 
         loginBtn.setOnClickListener(v -> {
             String emailTxt = email.getText().toString().trim();
-            String passTxt = password.getText().toString().trim();
+            String passTxt = password.getText().toString();
 
             if (emailTxt.isEmpty() || passTxt.isEmpty()) {
                 Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            loginBtn.setEnabled(false);
             mAuth.signInWithEmailAndPassword(emailTxt, passTxt)
                     .addOnCompleteListener(task -> {
+                        loginBtn.setEnabled(true);
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(this, MainActivity.class));
                             finish();
                         } else {
-                            Toast.makeText(this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Login failed. Check your credentials and connection.", Toast.LENGTH_LONG).show();
                         }
                     });
         });

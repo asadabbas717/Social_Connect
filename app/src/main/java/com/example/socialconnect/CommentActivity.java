@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.socialconnect.adapters.CommentAdapter;
 import com.example.socialconnect.models.Comment;
-import com.example.socialconnect.utils.NotificationSender;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 
@@ -44,12 +42,11 @@ public class CommentActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         postId = getIntent().getStringExtra("postId");
-        String postOwnerId = getIntent().getStringExtra("postOwnerId");
 
         focusInput = getIntent().getBooleanExtra("focusInput", false);
         scrollToBottom = getIntent().getBooleanExtra("scrollToBottom", false);
 
-        if (postId == null) {
+        if (postId == null || postId.isEmpty() || auth.getCurrentUser() == null) {
             Toast.makeText(this, "Invalid post. Cannot load comments.", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -69,13 +66,15 @@ public class CommentActivity extends AppCompatActivity {
                 return;
             }
 
+            if (auth.getCurrentUser() == null) { finish(); return; }
+            sendBtn.setEnabled(false);
             String uid = auth.getCurrentUser().getUid();
             String commentId = UUID.randomUUID().toString();
             Map<String, Object> comment = new HashMap<>();
             comment.put("id", commentId);
             comment.put("uid", uid);
             comment.put("text", commentText);
-            comment.put("timestamp", Timestamp.now());
+            comment.put("timestamp", FieldValue.serverTimestamp());
 
             db.collection("posts")
                     .document(postId)
@@ -83,25 +82,16 @@ public class CommentActivity extends AppCompatActivity {
                     .document(commentId)
                     .set(comment)
                     .addOnSuccessListener(unused -> {
+                        sendBtn.setEnabled(true);
                         commentInput.setText("");
                         hideKeyboard();
                         loadComments();
+                    }).addOnFailureListener(e -> {
+                        sendBtn.setEnabled(true);
+                        Toast.makeText(this, "Comment could not be saved. Try again.", Toast.LENGTH_LONG).show();
                     });
 
 
-            assert postOwnerId != null;
-            db.collection("users").document(postOwnerId).get()
-                    .addOnSuccessListener(userSnap -> {
-                        String token = userSnap.getString("fcmToken");
-                        String commenterName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-                        if (token != null && !token.isEmpty()) {
-                            NotificationSender.sendNotification(
-                                    token,
-                                    "New Comment!",
-                                    (commenterName != null ? commenterName : "Someone") + " commented on your post."
-                            );
-                        }
-                    });
 
         });
 
@@ -120,19 +110,21 @@ public class CommentActivity extends AppCompatActivity {
         db.collection("posts")
                 .document(postId)
                 .collection("comments")
-                .orderBy("timestamp", Query.Direction.ASCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(100)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     commentList.clear();
                     for (DocumentSnapshot doc : querySnapshot) {
                         Comment comment = doc.toObject(Comment.class);
-                        commentList.add(comment);
+                        if (comment != null) commentList.add(comment);
                     }
+                    Collections.reverse(commentList);
                     adapter.notifyDataSetChanged();
                     if (scrollToBottom && !commentList.isEmpty()) {
                         commentRecycler.scrollToPosition(commentList.size() - 1);
                     }
-                });
+                }).addOnFailureListener(e -> Toast.makeText(this, "Could not load comments", Toast.LENGTH_LONG).show());
     }
 
     private void hideKeyboard() {

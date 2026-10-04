@@ -57,11 +57,13 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadUserProfile() {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener(snapshot -> {
+                    if (!isAdded() || getView() == null) return;
                     if (snapshot.exists()) {
                         String name = snapshot.getString("name");
                         String bio = snapshot.getString("bio");
@@ -78,6 +80,7 @@ public class ProfileFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
+                    if (!isAdded() || getView() == null) return;
                     nameText.setText("Failed to load");
                     bioText.setText("");
                 });

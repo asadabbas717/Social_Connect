@@ -1,6 +1,12 @@
 package com.example.socialconnect;
 
 import android.os.Bundle;
+import android.content.Intent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import java.util.Collections;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -17,12 +23,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token ->
+                FirebaseFirestore.getInstance().collection("users").document(uid)
+                        .set(Collections.singletonMap("fcmToken", token), SetOptions.merge()));
 
         bottomNav = findViewById(R.id.bottomNavigationView);
 
-        // Load HomeFragment by default
-        getSupportFragmentManager().beginTransaction()
+        if (savedInstanceState == null) getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new HomeFragment())
                 .commit();
 
